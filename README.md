@@ -42,9 +42,68 @@ Image_('test.png')
 
 make_image.ipynbにて作成した画像を、kerasを用いて畳み込みニューラルネットワークを構築、学習します。
 
+```python
+#層内容
+model = Sequential()
+model.add(Conv2D(32, kernel_size=(2, 2), activation='relu', kernel_initializer='he_normal', input_shape=input_shape))
+model.add(Conv2D(32, kernel_size=(2, 2), activation='relu', kernel_initializer='he_normal'))
+model.add(MaxPool2D(pool_size=(2, 2)))
+model.add(Dropout(0.2))
+
+model.add(Conv2D(64, kernel_size=(2, 2), activation='relu', padding='same', kernel_initializer='he_normal'))
+model.add(Conv2D(64, kernel_size=(2, 2), activation='relu', padding='same', kernel_initializer='he_normal'))
+model.add(MaxPool2D(pool_size=(2, 2)))
+model.add(Dropout(0.2))
+
+model.add(Conv2D(128, kernel_size=(2, 2), activation='relu', padding='same', kernel_initializer='he_normal'))
+model.add(Conv2D(128, kernel_size=(2, 2), activation='relu', padding='same', kernel_initializer='he_normal'))
+model.add(MaxPool2D(pool_size=(2, 2)))
+model.add(Dropout(0.2))
+
+model.add(Conv2D(256, kernel_size=(2, 2), activation='relu', padding='same', kernel_initializer='he_normal'))
+model.add(Dropout(0.2))
+
+model.add(Flatten())
+model.add(Dense(256, input_shape=input_shape))
+model.add(BatchNormalization())
+model.add(Dropout(0.2))
+model.add(Dense(num_classes, activation='softmax'))
+
+model.compile(loss=keras.losses.categorical_crossentropy,
+             optimizer=keras.optimizers.Adam(learning_rate=0.0001),
+             metrics=['accuracy'])
+
+learning_rate_reduction = ReduceLROnPlateau(monitor='val_accuracy',
+                                           patience=3,
+                                           verbose=1,
+                                           factor=0.5,
+                                           min_lr=0.0001)
+datagen = ImageDataGenerator(
+    featurewise_center = False,
+    samplewise_center = False,
+    featurewise_std_normalization=False,
+    samplewise_std_normalization=False,
+    zca_whitening=False,
+    rotation_range=0,
+    zoom_range = 0.1,
+    width_shift_range=0.1,
+    height_shift_range=0.1
+)
+model.summary()
+
+datagen.fit(X_train)
+
+h = model.fit_generator(datagen.flow(X_train, Y_train, batch_size=batch_size),
+                       epochs = epochs, validation_data = (X_valid, Y_valid),
+                       verbose = 1, steps_per_epoch = X_train.shape[0] // batch_size,
+                       callbacks=[learning_rate_reduction])
+```
+
+
 ### predict_receipt_angle.ipynb
 
 実際にスマートフォンで撮影したレシート画像の角度を分類します。
+生成した画像で、撮影したレシート画像の角度を分類することは、現状うまくできていません。
 
 ### receipt_photo
 
