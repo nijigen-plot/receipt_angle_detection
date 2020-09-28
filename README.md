@@ -105,6 +105,8 @@ h = model.fit_generator(datagen.flow(X_train, Y_train, batch_size=batch_size),
 実際にスマートフォンで撮影したレシート画像の角度を分類します。
 生成した画像で、撮影したレシート画像の角度を分類することは、現状うまくできていません。
 
+![ダウンロード (5)](https://user-images.githubusercontent.com/65853436/94454680-21bf6380-01ed-11eb-9946-12c34aa82dc1.png)
+
 ### receipt_photo
 
 レシート画像です。
